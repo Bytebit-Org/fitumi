@@ -1,7 +1,7 @@
 {
   "name": "@rbxts/fitumi",
   "version": "0.0.1",
-  "description": "",
+  "description": "Fake It 'Till You Make It - A unit testing utility for faking everything from Roblox Instances to custom objects.",
   "main": "out/init.lua",
   "scripts": {
     "prepublishOnly": "rbxtsc"
