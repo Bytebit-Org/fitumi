@@ -1,1 +1,1 @@
-export declare function fake<T>(): T;
+export type fake = <T>() => T;

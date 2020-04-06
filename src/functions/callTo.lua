@@ -1,3 +1,5 @@
+local internalsSymbol = require(script.Parent.Parent.symbols.internalsSymbol)
+
 function isNaN(val)
 	return val ~= val
 end
@@ -9,7 +11,7 @@ return function (fakedTable, key, ...)
 		fakedTable[key] = function(...)
 			local givenArgs = { length = select("#", ...), ... }
 
-			local returnsArray = fakedTable._functionReturns[key]
+			local returnsArray = fakedTable[internalsSymbol].functionReturns[key]
 			if not returnsArray then
 				return nil
 			end
@@ -47,14 +49,16 @@ return function (fakedTable, key, ...)
 
 	return {
 		returns = function(self, ...)
-			if not fakedTable._functionReturns[key] then
-				fakedTable._functionReturns[key] = {}
+			if not fakedTable[internalsSymbol].functionReturns[key] then
+				fakedTable[internalsSymbol].functionReturns[key] = {}
 			end
 
-			table.insert(fakedTable._functionReturns[key], {
+			local returnVals = { ... }
+
+			table.insert(fakedTable[internalsSymbol].functionReturns[key], {
 				args = expectedArgs,
 				valueGetter = function()
-					return ...
+					return table.unpack(returnVals)
 				end
 			})
 		end
