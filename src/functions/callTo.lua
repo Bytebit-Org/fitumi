@@ -69,7 +69,7 @@ return function (fakedTable, key, ...)
 		didHappen = function(self)
 			local callHistory = fakedTable[key][internalsSymbol].callHistory
 			for i = 1, #callHistory do
-				if doesVarArgsTableMatchExpectations(expectedArgs, callHistory[i]) then
+				if doesVarArgsTableMatchExpectations(callHistory[i], expectedArgs) then
 					return true
 				end
 			end
