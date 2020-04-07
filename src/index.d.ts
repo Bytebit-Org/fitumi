@@ -1,3 +1,3 @@
 export { a } from "./a";
-export { spy } from "./functions/spy";
+export { clearCallHistory } from "./functions/clearCallHistory";
 export declare const wildcard: object;

@@ -1,5 +1,5 @@
 return {
 	a = require(script.a),
-	spy = require(script.functions.spy),
+	clearCallHistory = require(script.functions.clearCallHistory),
 	wildcard = require(script.symbols.wildcard)
 }

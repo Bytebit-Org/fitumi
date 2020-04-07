@@ -1,73 +1,13 @@
-local internalsSymbol = require(script.Parent.Parent.symbols.internalsSymbol)
-local wildcard = require(script.Parent.Parent.symbols.wildcard)
+local doesVarArgsTableMatchExpectations = require(script.Parent.Parent.internal.doesVarArgsTableMatchExpectations)
+local internalsSymbol = require(script.Parent.Parent.internal.internalsSymbol)
+local varArgsToTable = require(script.Parent.Parent.internal.varArgsToTable)
 
-function isNaN(val)
-	return val ~= val
-end
-
-function varArgsToTable(...)
-	return { length = select("#", ...), ... }
-end
-
-function doesVarArgsTableMatchExpectations(actual, expected)
-	if actual.length ~= expected.length then
-		return false
-	end
-
-	for i = 1, actual.length do
-		local doesJthArgMatch = expected[i] == wildcard or
-			actual[i] == expected[i] or
-			(isNaN(actual[i]) and isNaN(expected[i]))
-
-		if not doesJthArgMatch then
-			return false
-		end
-	end
-
-	return true
-end
-
-return function (fakedTable, key, ...)
+return function (fakedTable, ...)
 	local expectedArgs = varArgsToTable(...)
-
-	if not rawget(fakedTable, key) then
-		rawset(fakedTable, key, setmetatable({
-			[internalsSymbol] = {
-				callHistory = {}
-			}
-		}, {
-			__call = function(tbl, ...)
-				local givenArgs = varArgsToTable(...)
-
-				table.insert(tbl[internalsSymbol].callHistory, givenArgs)
-
-				local returnsArray = fakedTable[internalsSymbol].functionReturns[key]
-				if not returnsArray then
-					return nil
-				end
-
-				local returnValueGetter = nil
-
-				for i = 1, #returnsArray do
-					local returnInfo = returnsArray[i]
-					if doesVarArgsTableMatchExpectations(givenArgs, returnInfo.args) then
-						returnValueGetter = returnInfo.valueGetter
-						break
-					end
-				end
-
-				if returnValueGetter then
-					return returnValueGetter()
-				else
-					return nil
-				end
-			end
-		}))
-	end
 
 	return {
 		didHappen = function(self)
-			local callHistory = fakedTable[key][internalsSymbol].callHistory
+			local callHistory = fakedTable[internalsSymbol].callHistory
 			for i = 1, #callHistory do
 				if doesVarArgsTableMatchExpectations(callHistory[i], expectedArgs) then
 					return true
@@ -80,13 +20,9 @@ return function (fakedTable, key, ...)
 			return not self:didHappen()
 		end,
 		returns = function(self, ...)
-			if not fakedTable[internalsSymbol].functionReturns[key] then
-				fakedTable[internalsSymbol].functionReturns[key] = {}
-			end
-
 			local returnVals = { ... }
 
-			table.insert(fakedTable[internalsSymbol].functionReturns[key], {
+			table.insert(fakedTable[internalsSymbol].functionReturns, {
 				args = expectedArgs,
 				valueGetter = function()
 					return unpack(returnVals)
