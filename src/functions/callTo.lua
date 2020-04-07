@@ -1,8 +1,11 @@
 local doesVarArgsTableMatchExpectations = require(script.Parent.Parent.internal.doesVarArgsTableMatchExpectations)
 local internalsSymbol = require(script.Parent.Parent.internal.internalsSymbol)
+local isFakedTable = require(script.Parent.Parent.internal.isFakedTable)
 local varArgsToTable = require(script.Parent.Parent.internal.varArgsToTable)
 
 return function (fakedTable, ...)
+	assert(isFakedTable(fakedTable), "Can only use callTo on a faked table")
+
 	local expectedArgs = varArgsToTable(...)
 
 	return {
