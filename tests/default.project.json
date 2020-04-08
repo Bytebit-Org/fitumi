@@ -1,0 +1,18 @@
+{
+    "name": "test-rojo-proj",
+    "tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"fitumi": {
+				"$path": "../src"
+			},
+			"TestEZ": {
+				"$path": "modules/testez/src"
+			},
+			"Tests": {
+				"$path": "src"
+			}
+		}
+    }
+}
