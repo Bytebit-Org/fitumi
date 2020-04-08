@@ -2,6 +2,10 @@ local isNaN = require(script.Parent.Parent.internal.isNaN)
 local wildcard = require(script.Parent.Parent.symbols.wildcard)
 
 return function (actual, expected)
+	if actual.length == nil or expected.length == nil then
+		error("Invalid var args tables, cannot compare")
+	end
+
 	if actual.length ~= expected.length then
 		return false
 	end
