@@ -5,6 +5,10 @@ return function()
 	local internalsSymbol = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("internal"):WaitForChild("internalsSymbol"))
 	local nilSymbol = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("internal"):WaitForChild("nilSymbol"))
 
+	local function createVarArgsTable(...)
+		return { length = select("#", ...), ... }
+	end
+
 	describe("fake", function()
 		local function expectValidFakeTable(tbl)
 			expect(tbl).to.be.a("table")
@@ -45,6 +49,24 @@ return function()
 			expect(loggedCall[1]).to.equal(true)
 			expect(loggedCall[2]).to.equal(2)
 			expect(loggedCall[3]).to.equal("three")
+		end)
+
+		it("should return values correctly", function()
+			local result = fake()
+
+			local returnValue = {}
+			result[internalsSymbol].functionReturns = {
+				{
+					args = createVarArgsTable(true, 2, "three"),
+					valueGetter = function() return returnValue end
+				}
+			}
+
+			expect(result()).never.to.be.ok()
+			expect(result(true)).never.to.be.ok()
+			expect(result(true, 2)).never.to.be.ok()
+			expect(result(true, 2, "three")).to.be.ok()
+			expect(result(true, 2, "three")).to.equal(returnValue)
 		end)
 
 		it("should set values correctly when given simple values", function()
