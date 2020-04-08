@@ -1,1 +1,11 @@
+# directories
+.vscode/
+.github/
 src/
+
+# files
+.editorconfig
+.eslintrc
+.gitignore
+roblox.toml
+selene.toml
