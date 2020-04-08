@@ -69,7 +69,7 @@ return function()
 			expect(result(true, 2, "three")).to.equal(returnValue)
 		end)
 
-		itFOCUS("should return tuple values correctly", function()
+		it("should return tuple values correctly", function()
 			local result = fake()
 
 			result[internalsSymbol].functionReturns = {
