@@ -21,15 +21,15 @@ local function fakedTableCall(fakedTable, ...)
 
 	table.insert(fakedTable[internalsSymbol].callHistory, givenArgs)
 
-	local returnsArray = fakedTable[internalsSymbol].functionReturns
-	if not returnsArray then
+	local functionReturns = fakedTable[internalsSymbol].functionReturns
+	if not functionReturns then
 		return nil
 	end
 
 	local returnValueGetter = nil
 
-	for i = 1, #returnsArray do
-		local returnInfo = returnsArray[i]
+	for i = 1, #functionReturns do
+		local returnInfo = functionReturns[i]
 		if doesVarArgsTableMatchExpectations(givenArgs, returnInfo.args) then
 			returnValueGetter = returnInfo.valueGetter
 			break
