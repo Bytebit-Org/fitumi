@@ -51,7 +51,7 @@ return function()
 			expect(loggedCall[3]).to.equal("three")
 		end)
 
-		it("should return values correctly", function()
+		it("should return single values correctly", function()
 			local result = fake()
 
 			local returnValue = {}
@@ -67,6 +67,24 @@ return function()
 			expect(result(true, 2)).never.to.be.ok()
 			expect(result(true, 2, "three")).to.be.ok()
 			expect(result(true, 2, "three")).to.equal(returnValue)
+		end)
+
+		itFOCUS("should return tuple values correctly", function()
+			local result = fake()
+
+			result[internalsSymbol].functionReturns = {
+				{
+					args = createVarArgsTable(),
+					valueGetter = function() return true, 2, "three" end
+				}
+			}
+
+			expect(result()).to.be.ok()
+
+			local returnedVal1, returnedVal2, returnedVal3 = result()
+			expect(returnedVal1).to.equal(true)
+			expect(returnedVal2).to.equal(2)
+			expect(returnedVal3).to.equal("three")
 		end)
 
 		it("should set values correctly when given simple values", function()
