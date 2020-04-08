@@ -60,10 +60,11 @@ local function fakedTableNewIndex(tbl, key, value)
 		value = nilSymbol
 	end
 
-	table.insert(tbl[internalsSymbol].writeHistory, {
-		key = key,
-		value = value
-	})
+	if tbl[internalsSymbol].writeHistory[key] == nil then
+		tbl[internalsSymbol].writeHistory[key] = {}
+	end
+	table.insert(tbl[internalsSymbol].writeHistory[key], value)
+
 	tbl[internalsSymbol].setValues[key] = value
 end
 
