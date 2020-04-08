@@ -2,10 +2,12 @@
 .vscode/
 .github/
 src/
+tests/
 
 # files
 .editorconfig
 .eslintrc
 .gitignore
+.gitmodules
 roblox.toml
 selene.toml
