@@ -1,6 +1,6 @@
 {
   "name": "@rbxts/fitumi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fake It 'Till You Make It - A unit testing utility for faking everything from Roblox Instances to custom objects.",
   "main": "out/init.lua",
   "scripts": {
@@ -10,6 +10,14 @@
   "keywords": [],
   "author": "Bytebit",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bytebit-Org/fitumi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Bytebit-Org/fitumi/issues"
+  },
+  "homepage": "https://github.com/Bytebit-Org/fitumi#readme",
   "publishConfig": {
     "access": "public"
   },
