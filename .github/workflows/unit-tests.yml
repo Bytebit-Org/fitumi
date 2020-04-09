@@ -1,8 +1,16 @@
-name: unit-tests
+name: ci
 
 on: [push]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: install selene
+        run: cargo install selene
+      - name: run selene
+        run: selene ./src/ ./tests/src/
   unit-tests:
     runs-on: windows-latest
     steps:
