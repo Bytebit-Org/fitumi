@@ -20,8 +20,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: install foreman packages (rojo)
         run: foreman install
-      - name: build test place
-        run: |
-          rbxtsc
-          rojo build -o .\\tests\\build.rbxlx .\\tests\\
+      - name: build typescript code
+        run: rbxtsc
+      - name: run rojo build
+        run: rojo build -o .\\tests\\build.rbxlx .\\tests\\
       - run: .\\run-in-roblox.exe tests\\build.rbxlx -t 1800 -s .\\tests\\spec.lua
