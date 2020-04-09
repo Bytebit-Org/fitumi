@@ -23,5 +23,5 @@ jobs:
       - name: build test place
         run: |
           rbxtsc
-          rojo build -o .\\tests\\build.rbxlx tests
+          rojo build -o .\\tests\\build.rbxlx .\\tests
       - run: .\\run-in-roblox.exe tests\\build.rbxlx -t 1800 -s .\\tests\\spec.lua
