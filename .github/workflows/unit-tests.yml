@@ -3,7 +3,7 @@ name: unit-tests
 on: [push]
 
 jobs:
-  name:
+  unit-tests:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
