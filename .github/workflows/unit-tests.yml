@@ -19,7 +19,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: install foreman packages (rojo)
-        uses: foreman install
+        run: foreman install
       - name: build test place
         run: |
           rbxtsc
