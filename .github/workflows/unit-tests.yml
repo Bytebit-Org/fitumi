@@ -14,8 +14,12 @@ jobs:
       - run: python install.py "${{ secrets.ROBLOSECURITY }}"
       - name: install roblox-ts
         run: npm install roblox-ts
-      - name: install rojo
-        run: cargo install rojo
+      - name: install foreman
+        uses: rojo-rbx/setup-foreman@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: install foreman packages (rojo)
+        uses: foreman install
       - name: build test place
         run: |
           rbxtsc
