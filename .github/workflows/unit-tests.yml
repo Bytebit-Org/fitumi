@@ -33,10 +33,6 @@ jobs:
         run: pip install wget psutil
       - name: install roblox
         run: python install.py "${{ secrets.ROBLOSECURITY }}"
-      - name: install roblox-ts
-        run: npm i roblox-ts
-      - name: compile typescript code
-        run: npx roblox-ts
       - name: install foreman
         uses: rojo-rbx/setup-foreman@v1
         with:
