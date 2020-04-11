@@ -4,6 +4,7 @@
   "description": "Fake It 'Till You Make It - A unit testing utility for faking everything from Roblox Instances to custom objects.",
   "main": "src/init.lua",
   "scripts": {
+    "eslint": "npx eslint \"src/**/*.ts\" --max-warnings 0",
 	"test": "rojo build -o tests/build.rbxlx tests && run-in-roblox tests/build.rbxlx -s tests/spec.lua"
   },
   "keywords": [],
