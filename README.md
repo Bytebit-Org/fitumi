@@ -1,8 +1,5 @@
 # Fake It 'Till You Make It
 <p align="center">
-	A unit testing utility for faking dependencies in Lua
-	<br />
-	<br />
 	<a href="https://github.com/Bytebit-Org/fitumi/actions">
         <img src="https://github.com/Bytebit-Org/fitumi/workflows/CI/badge.svg" alt="CI status" />
     </a>
