@@ -1,5 +1,5 @@
 # Fake It 'Till You Make It
-<div style="text-align: center">
+<p align="center">
 	A unit testing utility for faking dependencies in Lua
 	<br />
 	<br />
@@ -15,7 +15,7 @@
 	<a href="https://discord.gg/QEz3v8y">
 		<img src="https://img.shields.io/badge/discord-join-7289DA.svg?logo=discord&longCache=true&style=flat" alt="Discord server" />
 	</a>
-</div>
+</p>
 
 Fake It 'Till You Make It, or fitumi, is a Lua faking library intended for helping to create comprehensive unit tests for Lua code bases. While not required, fitumi was designed with Roblox development as the primary use-case. Fitumi's design is inspired in part by [FakeItEasy](https://fakeiteasy.github.io/).
 
