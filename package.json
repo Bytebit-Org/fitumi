@@ -5,7 +5,7 @@
   "main": "src/init.lua",
   "scripts": {
     "eslint": "npx eslint \"src/**/*.ts\" --max-warnings 0",
-    "test": "rojo build -o tests/build.rbxlx tests && run-in-roblox tests/build.rbxlx -s tests/spec.lua"
+	"test": "rojo build -o tests/build.rbxlx tests && run-in-roblox tests/build.rbxlx -s tests/spec.lua"
   },
   "keywords": [],
   "author": "Bytebit",
