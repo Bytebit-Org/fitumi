@@ -9,6 +9,8 @@ local function createFake()
 	return setmetatable({
 		[internalsSymbol] = {
 			callHistory = {},
+			callErrors = {},
+			executionCallbacks = {},
 			functionReturns = {},
 			setValues = {},
 			writeHistory = {}
@@ -20,6 +22,26 @@ local function fakedTableCall(fakedTable, ...)
 	local givenArgs = varArgsToTable(...)
 
 	table.insert(fakedTable[internalsSymbol].callHistory, givenArgs)
+
+	local executionCallbacks = fakedTable[internalsSymbol].executionCallbacks
+	if executionCallbacks then
+		for i = 1, #executionCallbacks do
+			local executionCallbackInfo = executionCallbacks[i]
+			if doesVarArgsTableMatchExpectations(givenArgs, executionCallbackInfo.args) then
+				executionCallbackInfo.invoke()
+			end
+		end
+	end
+
+	local callErrors = fakedTable[internalsSymbol].callErrors
+	if callErrors then
+		for i = 1, #callErrors do
+			local callErrorInfo = callErrors[i]
+			if doesVarArgsTableMatchExpectations(givenArgs, callErrorInfo.args) then
+				callErrorInfo.throw()
+			end
+		end
+	end
 
 	local functionReturns = fakedTable[internalsSymbol].functionReturns
 	if not functionReturns then
