@@ -6,10 +6,6 @@ return function ()
 	local fake = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("fake"))
 	local internalsSymbol = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("internal"):WaitForChild("internalsSymbol"))
 
-	local function createVarArgsTable(...)
-		return { length = select("#", ...), ... }
-	end
-
 	describe("callTo", function ()
 		it("should return the expected set of methods", function ()
 			local fakedTable = fake()
