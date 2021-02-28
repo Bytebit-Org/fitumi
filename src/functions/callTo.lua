@@ -10,10 +10,10 @@ return function (fakedTable, ...)
 
 	return {
 		executes = function (self, callback)
-			table.insert(fakedTable[internalsSymbol].executionCallbacks({
+			table.insert(fakedTable[internalsSymbol].executionCallbacks, {
 				args = expectedArgs,
 				invoke = callback
-			}))
+			})
 		end,
 		didHappen = function(self)
 			local callHistory = fakedTable[internalsSymbol].callHistory
@@ -29,12 +29,12 @@ return function (fakedTable, ...)
 			return not self:didHappen()
 		end,
 		throws = function (self, errorArgs)
-			table.insert(fakedTable[internalsSymbol].callErrors({
+			table.insert(fakedTable[internalsSymbol].callError, ({
 				args = expectedArgs,
 				throw = function ()
 					error(errorArgs)
 				end
-			}))
+			})
 		end,
 		returns = function(self, ...)
 			local returnVals = { ... }
