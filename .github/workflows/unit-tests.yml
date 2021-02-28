@@ -23,8 +23,6 @@ jobs:
       - uses: actions/checkout@v1
         with:
           submodules: recursive
-      - name: download run-in-roblox
-        run: Invoke-WebRequest -Uri "${{ secrets.RUNINROBLOXDOWNLOAD }}" -OutFile run-in-roblox.exe
       - name: download roblox install script
         run: Invoke-WebRequest -Uri "https://raw.githubusercontent.com/OrbitalOwen/roblox-win-installer/master/install.py" -OutFile install.py
       - name: download settings file
@@ -37,9 +35,11 @@ jobs:
         uses: rojo-rbx/setup-foreman@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: install foreman packages (rojo)
-        run: foreman install
+      - name: install foreman packages (rojo, run-in-roblox)
+        run: |
+          Add-Content .\\foreman.toml "`nrun-in-roblox = { source = "rojo-rbx/run-in-roblox", version = "0.3.0" }"
+          foreman install
       - name: run rojo build
         run: rojo build -o .\\tests\\build.rbxlx .\\tests\\
       - name: run tests
-        run: .\\run-in-roblox.exe --place .\\tests\\build.rbxlx --script .\\tests\\spec.lua
+        run: run-in-roblox --place .\\tests\\build.rbxlx --script .\\tests\\spec.lua
