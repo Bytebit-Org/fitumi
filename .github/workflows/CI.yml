@@ -37,7 +37,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: install foreman packages (rojo, run-in-roblox)
         run: |
-          Add-Content .\\foreman.toml '`nrun-in-roblox = { source = "rojo-rbx/run-in-roblox", version = "0.3.0" }'
+          Add-Content .\\foreman.toml 'run-in-roblox = { source = "rojo-rbx/run-in-roblox", version = "0.3.0" }'
           type .\\foreman.toml
           foreman install
       - name: run rojo build
