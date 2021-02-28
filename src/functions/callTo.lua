@@ -29,7 +29,7 @@ return function (fakedTable, ...)
 			return not self:didHappen()
 		end,
 		throws = function (self, errorArgs)
-			table.insert(fakedTable[internalsSymbol].callError, {
+			table.insert(fakedTable[internalsSymbol].callErrors, {
 				args = expectedArgs,
 				throw = function ()
 					error(errorArgs)
