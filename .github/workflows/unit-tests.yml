@@ -15,8 +15,8 @@ jobs:
         run: sudo apt-get install zip unzip
       - name: install selene
         run: |
-          curl -L -o ./selene.zip https://github.com/Kampfkarren/selene/releases/latest/download/selene-linux
-          unzip ./selene.zip
+          curl https://github.com/Kampfkarren/selene/releases/latest/download/selene-linux -L -o selene-latest.zip
+          unzip ./selene-latest.zip
           chmod +x ./selene
       - name: run selene
         run: ./selene ./src ./tests/src/
