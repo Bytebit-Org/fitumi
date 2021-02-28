@@ -3,6 +3,7 @@ return function ()
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 	local callTo = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("callTo"))
+	local fake = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("fake"))
 	local internalsSymbol = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("internal"):WaitForChild("internalsSymbol"))
 
 	local function createVarArgsTable(...)
@@ -11,9 +12,7 @@ return function ()
 
 	describe("callTo", function ()
 		it("should return the expected set of methods", function ()
-			local fakedTable = {
-				[internalsSymbol] = {}
-			}
+			local fakedTable = fake()
 
 			local result = callTo(fakedTable)
 			expect(result).to.be.ok()
@@ -56,12 +55,7 @@ return function ()
 		end)
 
 		it("should execute callbacks as expected", function ()
-			local executionCallbacks = {}
-			local fakedTable = {
-				[internalsSymbol] = {
-					executionCallbacks = executionCallbacks
-				}
-			}
+			local fakedTable = fake()
 
 			local executionCount = 0
 			callTo(fakedTable, true):executes(function ()
@@ -76,13 +70,9 @@ return function ()
 		end)
 
 		it("should report that a call happened correctly", function ()
-			local fakedTable = {
-				[internalsSymbol] = {
-					callHistory = {
-						createVarArgsTable(true, 2, "three")
-					}
-				}
-			}
+			local fakedTable = fake()
+
+			fakedTable(true, 2, "three")
 
 			expect(callTo(fakedTable):didHappen()).to.equal(false)
 			expect(callTo(fakedTable, true):didHappen()).to.equal(false)
@@ -91,13 +81,9 @@ return function ()
 		end)
 
 		it("should report that a call did not happen correctly", function ()
-			local fakedTable = {
-				[internalsSymbol] = {
-					callHistory = {
-						createVarArgsTable(true, 2, "three")
-					}
-				}
-			}
+			local fakedTable = fake()
+
+			fakedTable(true, 2, "three")
 
 			expect(callTo(fakedTable):didNotHappen()).to.equal(true)
 			expect(callTo(fakedTable, true):didNotHappen()).to.equal(true)
@@ -106,28 +92,18 @@ return function ()
 		end)
 
 		it("should enforce throws as expected", function ()
-			local callErrors = {}
-			local errorMessage = HttpService:GenerateGUID()
-			local fakedTable = {
-				[internalsSymbol] = {
-					callErrors = callErrors
-				}
-			}
+			local fakedTable = fake()
 
+			local errorMessage = HttpService:GenerateGUID()
 			callTo(fakedTable):throws(errorMessage)
 
 			expect(fakedTable).to.throw(errorMessage)
 		end)
 
 		it("should enforce return values as expected", function ()
-			local functionReturns = {}
-			local returnValue = {}
-			local fakedTable = {
-				[internalsSymbol] = {
-					functionReturns = functionReturns
-				}
-			}
+			local fakedTable = fake()
 
+			local returnValue = {}
 			callTo(fakedTable, true, 2, "three"):returns(returnValue)
 
 			expect(fakedTable(true, 2, "three")).to.equal(returnValue)
@@ -135,12 +111,7 @@ return function ()
 		end)
 
 		it("should return tuples as expected", function ()
-			local functionReturns = {}
-			local fakedTable = {
-				[internalsSymbol] = {
-					functionReturns = functionReturns
-				}
-			}
+			local fakedTable = fake()
 
 			callTo(fakedTable, true):returns(1, "two")
 
