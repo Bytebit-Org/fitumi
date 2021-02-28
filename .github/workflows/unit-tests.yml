@@ -11,12 +11,9 @@ jobs:
         uses: bahmutov/npm-install@v1
       - name: run eslint
         run: npm run eslint
-      - name: install zip unzip
-        run: sudo apt-get install zip unzip
       - name: install selene
         run: |
-          curl https://github.com/Kampfkarren/selene/releases/latest/download/selene-linux -L -o selene-latest.zip
-          unzip ./selene-latest.zip
+          curl https://github.com/Kampfkarren/selene/releases/0.9.1/download/selene-linux -L -o selene
           chmod +x ./selene
       - name: run selene
         run: ./selene ./src ./tests/src/
