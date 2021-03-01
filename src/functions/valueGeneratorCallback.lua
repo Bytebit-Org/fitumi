@@ -6,7 +6,7 @@ valueGeneratorCallbackMetatable.__call = function(tbl, ...)
 end
 
 return function (callback)
-	return setmetatable{
+	return setmetatable({
 		[valueGeneratorCallbackSymbol] = callback
 	}, valueGeneratorCallbackMetatable)
 end

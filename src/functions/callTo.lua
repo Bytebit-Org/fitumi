@@ -38,12 +38,13 @@ return function (fakedTable, ...)
 			})
 		end,
 		returns = function(self, ...)
+			local n = select("#", ...)
 			local returnVals = { ... }
 
 			table.insert(fakedTable[internalsSymbol].functionReturns, {
 				args = expectedArgs,
 				valueGetter = function()
-					if #returnVals == 1 and returnVals[1][valueGeneratorCallbackSymbol] then
+					if n == 1 and type(returnVals[1]) == "table" and type(returnVals[1][valueGeneratorCallbackSymbol]) == "function" then
 						return returnVals[1]()
 					end
 
