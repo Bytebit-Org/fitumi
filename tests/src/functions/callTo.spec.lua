@@ -4,6 +4,7 @@ return function ()
 
 	local callTo = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("callTo"))
 	local fake = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("fake"))
+	local valueGeneratorCallback = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("valueGeneratorCallback"))
 
 	describe("callTo", function ()
 		it("should return the expected set of methods", function ()
@@ -102,7 +103,7 @@ return function ()
 			callTo(fakedTable, true, 2, "three"):returns(returnValue)
 
 			expect(fakedTable(true, 2, "three")).to.equal(returnValue)
-			expect(fakedTable(false, 0, "no")).never.to.be.ok()
+			expect(fakedTable(false, 0, "no")).to.never.be.ok()
 		end)
 
 		it("should return tuples as expected", function ()
@@ -115,7 +116,32 @@ return function ()
 			expect(correctArgsReturnValues[1]).to.equal(1)
 			expect(correctArgsReturnValues[2]).to.equal("two")
 
-			expect(fakedTable(false)).never.to.be.ok()
+			expect(fakedTable(false)).to.never.be.ok()
+		end)
+
+		it("should return values from a value generator callback as expected", function ()
+			local fakedTable = fake()
+
+			local valueGeneratorCallbackCallCount = 0
+
+			callTo(fakedTable, true):returns(valueGeneratorCallback(function ()
+				valueGeneratorCallbackCallCount = valueGeneratorCallbackCallCount + 1
+				return {}
+			end))
+
+			local firstCallResult = fakedTable(true)
+			expect(firstCallResult).to.be.ok()
+			expect(valueGeneratorCallbackCallCount).to.equal(1)
+
+			local secondCallResult = fakedTable(true)
+			expect(secondCallResult).to.be.ok()
+			expect(valueGeneratorCallbackCallCount).to.equal(2)
+
+			expect(firstCallResult).never.to.equal(secondCallResult)
+
+			local mismatchedArgsCallResult = fakedTable(false)
+			expect(mismatchedArgsCallResult).to.never.be.ok()
+			expect(valueGeneratorCallbackCallCount).to.equal(2)
 		end)
 	end)
 end

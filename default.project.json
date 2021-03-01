@@ -1,6 +1,6 @@
 {
 	"name": "fitumi",
 	"tree": {
-	  "$path": "src"
+	  "$path": "out"
 	}
   }
