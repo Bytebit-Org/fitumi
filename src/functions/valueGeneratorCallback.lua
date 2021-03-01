@@ -1,13 +1,12 @@
 local valueGeneratorCallbackSymbol = require(script.Parent.Parent.internal.valueGeneratorCallbackSymbol)
 
+local valueGeneratorCallbackMetatable = {}
+valueGeneratorCallbackMetatable.__call = function(tbl, ...)
+	return tbl[valueGeneratorCallbackSymbol](...)
+end
+
 return function (callback)
-	local valueGeneratorCallbackTable = {
-		[valueGeneratorCallbackSymbol] = {}
-	}
-
-	valueGeneratorCallbackTable.__call = function(_, ...)
-		return callback(...)
-	end
-
-	return valueGeneratorCallbackTable
+	return setmetatable{
+		[valueGeneratorCallbackSymbol] = callback
+	}, valueGeneratorCallbackMetatable)
 end
