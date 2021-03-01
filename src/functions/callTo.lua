@@ -1,6 +1,7 @@
 local doesVarArgsTableMatchExpectations = require(script.Parent.Parent.internal.doesVarArgsTableMatchExpectations)
 local internalsSymbol = require(script.Parent.Parent.internal.internalsSymbol)
 local isFakedTable = require(script.Parent.Parent.internal.isFakedTable)
+local valueGeneratorCallbackSymbol = require(script.Parent.Parent.internal.valueGeneratorCallbackSymbol)
 local varArgsToTable = require(script.Parent.Parent.internal.varArgsToTable)
 
 return function (fakedTable, ...)
@@ -42,6 +43,10 @@ return function (fakedTable, ...)
 			table.insert(fakedTable[internalsSymbol].functionReturns, {
 				args = expectedArgs,
 				valueGetter = function()
+					if #returnVals == 1 and returnVals[1][valueGeneratorCallbackSymbol] then
+						return returnVals[1]()
+					end
+
 					return unpack(returnVals)
 				end
 			})
