@@ -15,6 +15,8 @@ return function (fakedTable, ...)
 				args = expectedArgs,
 				invoke = callback
 			})
+
+			return self
 		end,
 		didHappen = function(self)
 			local callHistory = fakedTable[internalsSymbol].callHistory
