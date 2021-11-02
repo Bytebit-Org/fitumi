@@ -28,7 +28,7 @@ npm i @rbxts/fitumi
 ### Wally
 [Wally](https://github.com/UpliftGames/wally/) users can install this package by adding the following line to their `Wally.toml` under `[dependencies]`:
 ```
-fitumi = "bytebit/fitumi@1.0.10"
+fitumi = "bytebit/fitumi@1.0.11"
 ```
 
 Then just run `wally install`.
