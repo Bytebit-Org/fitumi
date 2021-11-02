@@ -18,6 +18,27 @@ Fake It 'Till You Make It, or fitumi, is a Lua faking library intended for helpi
 
 Fitumi comes paired with TypeScript annotation files for easy installation into a roblox-ts project and is published to NPM under the [@rbxts/fitumi](https://www.npmjs.com/package/@rbxts/fitumi) package.
 
+## Installation
+### roblox-ts
+Simply install to your [roblox-ts](https://roblox-ts.com/) project as follows:
+```
+npm i @rbxts/fitumi
+```
+
+### Wally
+[Wally](https://github.com/UpliftGames/wally/) users can install this package by adding the following line to their `Wally.toml` under `[dependencies]`:
+```
+fitumi = "bytebit/fitumi@1.0.10"
+```
+
+Then just run `wally install`.
+
+### From model file
+Model files are uploaded to every release as `.rbxmx` files. You can download the file from the [Releases page](https://github.com/Bytebit-Org/fitumi/releases) and load it into your project however you see fit.
+
+### From model asset
+New versions of the asset are uploaded with every release. The asset can be added to your Roblox Inventory and then inserted into your Place via Toolbox by getting it [here.](https://www.roblox.com/library/7881397561/fitumi-Package)
+
 ## Links
 - [API Documentation](DOCUMENTATION.md)
 
