@@ -1,7 +1,7 @@
 [package]
 name = "bytebit/fitumi"
 description = "Fake It 'Till You Make It - A unit testing utility for faking everything from Roblox Instances to custom objects."
-version = "1.0.10"
+version = "1.0.11"
 license = "MIT"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
