@@ -4,6 +4,7 @@ return function ()
 
 	local callTo = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("callTo"))
 	local fake = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("fake"))
+	local internalsSymbol = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("internal"):WaitForChild("internalsSymbol"))
 	local valueGeneratorCallback = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("valueGeneratorCallback"))
 
 	describe("callTo", function ()
@@ -142,6 +143,64 @@ return function ()
 			local mismatchedArgsCallResult = fakedTable(false)
 			expect(mismatchedArgsCallResult).to.never.be.ok()
 			expect(valueGeneratorCallbackCallCount).to.equal(2)
+		end)
+
+		it("should put newest call matches at the front of the fakedTable's callBehaviors array", function ()
+			local fakedTable = fake()
+
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(0)
+
+			callTo(fakedTable, true):executes(function () end)
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(1)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["invoke"]).to.be.ok()
+
+			callTo(fakedTable, true):returns("return value")
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(2)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["returnValueGetter"]).to.be.ok()
+
+			callTo(fakedTable, true):throws("thrower")
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(3)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["throw"]).to.be.ok()
+		end)
+
+		it("should be able to chain call behaviors with andThen", function ()
+			local fakedTable = fake()
+
+			local originalCallMatch = callTo(fakedTable, true)
+
+			local callMatchAfterExecutes = originalCallMatch:executes(function () end).andThen
+			expect(callMatchAfterExecutes).to.equal(originalCallMatch)
+
+			local callMatchAfterReturns = originalCallMatch:returns("return value").andThen
+			expect(callMatchAfterReturns).to.equal(originalCallMatch)
+
+			local callMatchAfterThrows = originalCallMatch:throws("thrower").andThen
+			expect(callMatchAfterThrows).to.equal(originalCallMatch)
+		end)
+
+		it("should set numberOfRemainingUses properly", function ()
+			local fakedTable = fake()
+
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(0)
+
+			local callMatch = callTo(fakedTable, true)
+
+			callMatch = callMatch:returns("return value").andThen
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(1)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["numberOfRemainingUses"]).to.equal(-1)
+
+			callMatch = callMatch:executes(function () end):once().andThen
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(2)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["numberOfRemainingUses"]).to.equal(1)
+
+			callMatch = callMatch:returns("return value again"):twice().andThen
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(3)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["numberOfRemainingUses"]).to.equal(2)
+
+			local randomCallsValue = math.random(10, 20)
+			callMatch = callMatch:throws("thrower"):numberOfTimes(randomCallsValue).andThen
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(4)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["numberOfRemainingUses"]).to.equal(randomCallsValue)
 		end)
 	end)
 end
