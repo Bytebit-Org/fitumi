@@ -28,7 +28,7 @@ local function fakedTableCall(fakedTable, ...)
 		for i = 1, #executionCallbacks do
 			local executionCallbackInfo = executionCallbacks[i]
 			if doesVarArgsTableMatchExpectations(givenArgs, executionCallbackInfo.args) then
-				executionCallbackInfo.invoke()
+				executionCallbackInfo.invoke(unpack(givenArgs))
 			end
 		end
 	end
