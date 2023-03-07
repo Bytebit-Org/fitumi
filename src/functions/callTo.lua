@@ -1,4 +1,4 @@
-local createCallMatchOptions = require(script.Parent.Parent.internal.createCallMatchOptions)
+local createCallMatchOptions = require(script.Parent.Parent.classes.createCallMatchOptions)
 local isFakedTable = require(script.Parent.Parent.internal.isFakedTable)
 local varArgsToTable = require(script.Parent.Parent.internal.varArgsToTable)
 

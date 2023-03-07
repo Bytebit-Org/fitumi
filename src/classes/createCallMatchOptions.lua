@@ -1,8 +1,8 @@
 local createCallBehaviorOptions = require(script.Parent.createCallBehaviorOptions)
-local doesVarArgsTableMatchExpectations = require(script.Parent.doesVarArgsTableMatchExpectations)
-local internalsSymbol = require(script.Parent.internalsSymbol)
-local isFakedTable = require(script.Parent.isFakedTable)
-local valueGeneratorCallbackSymbol = require(script.Parent.valueGeneratorCallbackSymbol)
+local doesVarArgsTableMatchExpectations = require(script.Parent.Parent.internal.doesVarArgsTableMatchExpectations)
+local internalsSymbol = require(script.Parent.Parent.internal.internalsSymbol)
+local isFakedTable = require(script.Parent.Parent.internal.isFakedTable)
+local valueGeneratorCallbackSymbol = require(script.Parent.Parent.internal.valueGeneratorCallbackSymbol)
 
 return function (fakedTable, expectedArgs)
 	assert(isFakedTable(fakedTable), "Can only use createCallResult on a faked table")
