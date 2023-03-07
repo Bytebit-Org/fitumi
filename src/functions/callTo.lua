@@ -38,6 +38,8 @@ return function (fakedTable, ...)
 					error(errorArgs)
 				end
 			})
+
+			return self
 		end,
 		returns = function(self, ...)
 			local n = select("#", ...)
@@ -53,6 +55,8 @@ return function (fakedTable, ...)
 					return unpack(returnVals)
 				end
 			})
+
+			return self
 		end
 	}
 end
