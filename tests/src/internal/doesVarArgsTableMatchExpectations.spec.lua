@@ -3,6 +3,7 @@ return function()
 
 	local wildcard = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("symbols"):WaitForChild("wildcard"))
 	local doesVarArgsTableMatchExpectations = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("internal"):WaitForChild("doesVarArgsTableMatchExpectations"))
+	local matchingArgValue = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("matchingArgValue"))
 
 	local function createVarArgsTable(...)
 		return { length = select("#", ...), ... }
@@ -74,6 +75,33 @@ return function()
 			local expected = createVarArgsTable(true, 2, "three")
 
 			expect(doesVarArgsTableMatchExpectations(actual, expected)).to.equal(false)
+		end)
+
+		it("should utilize matchingArgValue objects properly", function()
+			local actual = createVarArgsTable(true, 2, "three")
+			local expectedToPass = createVarArgsTable(
+				matchingArgValue(function (value)
+					return value
+				end),
+				matchingArgValue(function (value)
+					return value % 2 == 0
+				end),
+				matchingArgValue(function (value)
+					return value == "three"
+				end))
+			local expectedToFail = createVarArgsTable(
+				matchingArgValue(function (value)
+					return not value
+				end),
+				matchingArgValue(function (value)
+					return value % 2 == 1
+				end),
+				matchingArgValue(function (value)
+					return value ~= "three"
+				end))
+
+			expect(doesVarArgsTableMatchExpectations(actual, expectedToPass)).to.equal(true)
+			expect(doesVarArgsTableMatchExpectations(actual, expectedToFail)).to.equal(false)
 		end)
 	end)
 end

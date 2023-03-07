@@ -1,3 +1,4 @@
+local argMatchSymbol = require(script.Parent.Parent.internal.argMatchSymbol)
 local isNaN = require(script.Parent.Parent.internal.isNaN)
 local wildcard = require(script.Parent.Parent.symbols.wildcard)
 
@@ -11,13 +12,31 @@ return function (actual, expected)
 	end
 
 	for i = 1, actual.length do
-		local doesJthArgMatch = expected[i] == wildcard or
-			actual[i] == expected[i] or
-			(isNaN(actual[i]) and isNaN(expected[i]))
+		local ithActual = actual[i]
+		local ithExpected = expected[i]
 
-		if not doesJthArgMatch then
-			return false
+		local doesActualEqualExpected = ithActual == ithExpected
+		if doesActualEqualExpected then
+			return true
 		end
+
+		local isExpectedSetToWildcard = ithExpected == wildcard
+		if isExpectedSetToWildcard then
+			return true
+		end
+
+		local areBothValuesNaN = isNaN(ithActual) and isNaN(ithExpected)
+		if areBothValuesNaN then
+			return true
+		end
+
+		local isExpectedSetToMatchFunction = type(ithExpected) == "table" and ithExpected[argMatchSymbol] ~= nil
+		if isExpectedSetToMatchFunction then
+			local doesActualPassMatchingFunction = ithExpected.doesMatch(ithActual)
+			return doesActualPassMatchingFunction
+		end
+
+		return false
 	end
 
 	return true

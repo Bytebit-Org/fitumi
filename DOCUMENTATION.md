@@ -44,6 +44,13 @@ For every [`wildcard`](#wildcard) given here, any value at all will match
 #### Returns
 A `CallMatchOptions` object, as described in [CallMatchOptions](#CallMatchOptions)
 
+### Matching arguments with `a.matchingArgValue`
+`a.matchingArgValue(callback)`\
+Creates a customizable argument value matching operator for `callTo` and `methodCallTo` call matching.
+#### Parameters
+- callback\
+A simple callback function which is given the argument value in the same place in the parameter list and is expected to return a boolean result
+
 ### CallMatchOptions
 `callMatchOptions:countNumberOfMatchingCalls()`\
 Counts the number of matching calls that have been invoked against the source faked table with appropriate parameters as per the source callTo arguments
