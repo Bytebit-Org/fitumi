@@ -6,6 +6,7 @@ return function ()
 	local fake = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("fake"))
 	local internalsSymbol = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("internal"):WaitForChild("internalsSymbol"))
 	local valueGeneratorCallback = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("valueGeneratorCallback"))
+	local wildcard = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("symbols"):WaitForChild("wildcard"))
 
 	describe("callTo", function ()
 		it("should return the expected set of methods", function ()
@@ -201,6 +202,27 @@ return function ()
 			callMatch = callMatch:throws("thrower"):numberOfTimes(randomCallsValue).andThen
 			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(4)
 			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["numberOfRemainingUses"]).to.equal(randomCallsValue)
+		end)
+
+		it("should be able to track invokes even before setting up a callTo", function ()
+			local fakedTable = fake()
+
+			local numberOfCalls = math.random(1, 100)
+
+			for _ = 1, numberOfCalls do
+				fakedTable["someFunction"](true, 2, "three")
+			end
+
+			expect(callTo(fakedTable["someFunction"], wildcard, wildcard, wildcard):countNumberOfMatchingCalls()).to.equal(numberOfCalls)
+			expect(callTo(fakedTable["someFunction"], wildcard, wildcard, "three"):countNumberOfMatchingCalls()).to.equal(numberOfCalls)
+			expect(callTo(fakedTable["someFunction"], wildcard, 2, "three"):countNumberOfMatchingCalls()).to.equal(numberOfCalls)
+			expect(callTo(fakedTable["someFunction"], true, 2, "three"):countNumberOfMatchingCalls()).to.equal(numberOfCalls)
+		end)
+
+		it("should start out with invokes count being 0", function ()
+			local fakedTable = fake()
+
+			expect(callTo(fakedTable):countNumberOfMatchingCalls()).to.equal(0)
 		end)
 	end)
 end

@@ -25,6 +25,9 @@ export interface CallMatchOptions<T = unknown> {
 	//#endregion
 
 	//#region invoke checks
+	/** Counts the number of times matching calls have been made to the fake function */
+	countNumberOfMatchingCalls(): number;
+
 	/** Checks whether a call with the matching arguments did happen */
 	didHappen(): boolean;
 

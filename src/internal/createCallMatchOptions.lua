@@ -51,6 +51,18 @@ return function (fakedTable, expectedArgs)
 		end,
 
 		-- invokes checks
+		countNumberOfMatchingCalls = function()
+			local invokeCount = 0
+
+			local callHistory = fakedTable[internalsSymbol].callHistory
+			for i = 1, #callHistory do
+				if doesVarArgsTableMatchExpectations(callHistory[i], expectedArgs) then
+					invokeCount = invokeCount + 1
+				end
+			end
+
+			return invokeCount
+		end,
 		didHappen = function()
 			local callHistory = fakedTable[internalsSymbol].callHistory
 			for i = 1, #callHistory do
@@ -63,6 +75,6 @@ return function (fakedTable, expectedArgs)
 		end,
 		didNotHappen = function(self)
 			return not self:didHappen()
-		end
+		end,
 	}
 end
