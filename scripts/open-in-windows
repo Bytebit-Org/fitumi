@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+powershell.exe /c "start $(wslpath -w $1)"

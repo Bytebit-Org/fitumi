@@ -1,12 +1,14 @@
 {
   "name": "@rbxts/fitumi",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "Fake It 'Till You Make It - A unit testing utility for faking everything from Roblox Instances to custom objects.",
   "main": "out/init.lua",
   "scripts": {
     "eslint": "npx eslint \"src/**/*.ts\" --max-warnings 0",
     "prepublishOnly": "rm -rf ./out; rbxtsc --type=package",
-    "test": "rojo build -o tests/build.rbxlx tests && run-in-roblox tests/build.rbxlx -s tests/spec.lua"
+    "test": "rojo build -o tests/build.rbxlx ./tests/default.project.json && run-in-roblox ./tests/build.rbxlx -s ./tests/spec.server.lua",
+    "wsl-open-unit-tests": "set -e; rojo build -o ./tests/build.rbxlx ./tests/default.project.json; ./scripts/open-in-windows ./tests/build.rbxlx",
+    "wsl-run-unit-tests": "set -e; rojo build -o ./tests/build.rbxlx ./tests/default.project.json; ./scripts/run-unit-tests-in-windows ./tests/build.rbxlx ./tests/spec.server.lua"
   },
   "keywords": [],
   "author": "Bytebit",
