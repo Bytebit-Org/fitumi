@@ -8,10 +8,8 @@ local fakedMetaTable;
 local function createFake()
 	return setmetatable({
 		[internalsSymbol] = {
+			callBehaviors = {},
 			callHistory = {},
-			callErrors = {},
-			executionCallbacks = {},
-			functionReturns = {},
 			setValues = {},
 			writeHistory = {}
 		}
@@ -23,45 +21,32 @@ local function fakedTableCall(fakedTable, ...)
 
 	table.insert(fakedTable[internalsSymbol].callHistory, givenArgs)
 
-	local executionCallbacks = fakedTable[internalsSymbol].executionCallbacks
-	if executionCallbacks then
-		for i = 1, #executionCallbacks do
-			local executionCallbackInfo = executionCallbacks[i]
-			if doesVarArgsTableMatchExpectations(givenArgs, executionCallbackInfo.args) then
-				executionCallbackInfo.invoke(unpack(givenArgs))
+	local callBehaviors = fakedTable[internalsSymbol].callBehaviors
+	if not callBehaviors then
+		return
+	end
+
+	for i = 1, #callBehaviors do
+		local callBehavior = callBehaviors[i]
+		if doesVarArgsTableMatchExpectations(givenArgs, callBehavior.args) then
+			callBehavior.numberOfRemainingUses = callBehavior.numberOfRemainingUses - 1
+			if callBehavior.numberOfRemainingUses == 0 then
+				table.remove(callBehaviors, i)
 			end
-		end
-	end
 
-	local callErrors = fakedTable[internalsSymbol].callErrors
-	if callErrors then
-		for i = 1, #callErrors do
-			local callErrorInfo = callErrors[i]
-			if doesVarArgsTableMatchExpectations(givenArgs, callErrorInfo.args) then
-				callErrorInfo.throw()
+			if callBehavior["invoke"] then
+				-- callTo(...):executes(...)
+				callBehavior.invoke(unpack(givenArgs))
+			elseif callBehavior["throw"] then
+				-- callTo(...):throws(...)
+				callBehavior.throw()
+			elseif callBehavior["returnValueGetter"] then
+				-- callTo(...):returns(...)
+				return callBehavior.returnValueGetter()
 			end
-		end
-	end
 
-	local functionReturns = fakedTable[internalsSymbol].functionReturns
-	if not functionReturns then
-		return nil
-	end
-
-	local returnValueGetter = nil
-
-	for i = 1, #functionReturns do
-		local returnInfo = functionReturns[i]
-		if doesVarArgsTableMatchExpectations(givenArgs, returnInfo.args) then
-			returnValueGetter = returnInfo.valueGetter
 			break
 		end
-	end
-
-	if returnValueGetter then
-		return returnValueGetter()
-	else
-		return nil
 	end
 end
 
