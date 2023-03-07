@@ -15,7 +15,8 @@ The faked table
 ## Checking for calls to a faked table
 ### Using `a.callTo`
 `a.callTo(fakedTable, ...)`\
-Creates a new `CallMatchOptions` object associated with the given faked table and expected arguments
+Creates a new `CallMatchOptions` object associated with the given faked table and expected arguments;\
+if multiple callTos qualify, the latest one to be added will take precedence, except when used with andThen
 #### Parameters
 - fakedTable\
 The faked table that would be called\
@@ -29,7 +30,8 @@ A `CallMatchOptions` object, as described in [CallMatchOptions](#CallMatchOption
 ### Using `a.methodCallTo`
 `a.methodCallTo(fakedTable, methodKey, ...)`\
 Creates a new `CallMatchOptions` object associated with the given faked table and expected arguments,\
-injecting a reference to `fakedTable` as the first argument so as to make faking calls to methods look nicer in tests
+injecting a reference to `fakedTable` as the first argument so as to make faking calls to methods look nicer in tests\
+if multiple callTos qualify, the latest one to be added will take precedence, except when used with andThen
 #### Parameters
 - fakedTable\
 The faked table that would be called\
@@ -99,7 +101,8 @@ Sets this call behavior to only be used exactly the number of times specified, t
 A reference back to the same `CallBehaviorOptions` instance
 
 `callBehaviorOptions.andThen`\
-Points back to the source `CallMatchOptions` for this `CallBehaviorOptions` instance
+Points to clone of the source `CallMatchOptions` for this `CallBehaviorOptions` instance which will allow further call behaviors to be\
+configured to have lower precedence than the current behavior being configured
 
 ## Checking for writes to a faked table
 ### Using `a`

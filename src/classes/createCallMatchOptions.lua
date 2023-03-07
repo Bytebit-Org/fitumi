@@ -1,20 +1,41 @@
+local cloneSymbol = require(script.Parent.Parent.internal.cloneSymbol)
 local createCallBehaviorOptions = require(script.Parent.createCallBehaviorOptions)
 local doesVarArgsTableMatchExpectations = require(script.Parent.Parent.internal.doesVarArgsTableMatchExpectations)
 local internalsSymbol = require(script.Parent.Parent.internal.internalsSymbol)
 local isFakedTable = require(script.Parent.Parent.internal.isFakedTable)
 local valueGeneratorCallbackSymbol = require(script.Parent.Parent.internal.valueGeneratorCallbackSymbol)
 
-return function (fakedTable, expectedArgs)
+function createCallMatchOptions(fakedTable, expectedArgs, higherPrecedenceBehavior)
 	assert(isFakedTable(fakedTable), "Can only use createCallResult on a faked table")
 
+	function addCallBehaviorToFakedTable(callBehavior)
+		local insertIndex = 1
+
+		if higherPrecedenceBehavior then
+			for i = 1, #fakedTable[internalsSymbol].callBehaviors do
+				if fakedTable[internalsSymbol].callBehaviors[i] == higherPrecedenceBehavior then
+					insertIndex = i + 1
+					break
+				end
+			end
+		end
+
+		table.insert(fakedTable[internalsSymbol].callBehaviors, insertIndex, callBehavior)
+	end
+
 	return {
+		[cloneSymbol] = function (sourceBehavior)
+			return createCallMatchOptions(fakedTable, expectedArgs, sourceBehavior)
+		end,
+
 		-- behavior options
 		executes = function (self, callback)
 			local callBehavior = {
 				args = expectedArgs,
 				invoke = callback
 			}
-			table.insert(fakedTable[internalsSymbol].callBehaviors, 1, callBehavior)
+
+			addCallBehaviorToFakedTable(callBehavior)
 
 			return createCallBehaviorOptions(self, callBehavior)
 		end,
@@ -26,7 +47,7 @@ return function (fakedTable, expectedArgs)
 				end
 			}
 
-			table.insert(fakedTable[internalsSymbol].callBehaviors, 1, callBehavior)
+			addCallBehaviorToFakedTable(callBehavior)
 
 			return createCallBehaviorOptions(self, callBehavior)
 		end,
@@ -45,7 +66,7 @@ return function (fakedTable, expectedArgs)
 				end
 			}
 
-			table.insert(fakedTable[internalsSymbol].callBehaviors, 1, callBehavior)
+			addCallBehaviorToFakedTable(callBehavior)
 
 			return createCallBehaviorOptions(self, callBehavior)
 		end,
@@ -78,3 +99,5 @@ return function (fakedTable, expectedArgs)
 		end,
 	}
 end
+
+return createCallMatchOptions

@@ -1,3 +1,5 @@
+local cloneSymbol = require(script.Parent.Parent.internal.cloneSymbol)
+
 return function (callResult, callBehavior)
 	callBehavior.numberOfRemainingUses = -1
 
@@ -17,6 +19,6 @@ return function (callResult, callBehavior)
 			return self
 		end,
 
-		andThen = callResult,
+		andThen = callResult[cloneSymbol](callBehavior),
 	})
 end
