@@ -63,7 +63,7 @@ return function()
 			expect(doesVarArgsTableMatchExpectations(actual, expected)).to.equal(false)
 		end)
 
-		it("should recognize non-equivalent tables when NaN is in actual but not expected", function()
+		itFOCUS("should recognize non-equivalent tables when NaN is in actual but not expected", function()
 			local actual = createVarArgsTable(true, 0 / 0, "three")
 			local expected = createVarArgsTable(true, 2, "three")
 

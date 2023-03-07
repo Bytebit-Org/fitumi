@@ -17,25 +17,28 @@ return function (actual, expected)
 
 		local doesActualEqualExpected = ithActual == ithExpected
 		if doesActualEqualExpected then
-			return true
+			continue
 		end
 
 		local isExpectedSetToWildcard = ithExpected == wildcard
 		if isExpectedSetToWildcard then
-			return true
+			continue
 		end
 
-		local areBothValuesNaN = isNaN(ithActual) and isNaN(ithExpected)
+		local areBothValuesNaN = isNaN(ithExpected) and isNaN(ithActual)
 		if areBothValuesNaN then
-			return true
+			continue
 		end
 
-		local isExpectedSetToMatchFunction = type(ithExpected) == "table" and ithExpected[argMatchSymbol] ~= nil
-		if isExpectedSetToMatchFunction then
+		local isExpectedSetToMatchingFunction = type(ithExpected) == "table" and ithExpected[argMatchSymbol] ~= nil
+		if isExpectedSetToMatchingFunction then
 			local doesActualPassMatchingFunction = ithExpected.doesMatch(ithActual)
-			return doesActualPassMatchingFunction
+			if doesActualPassMatchingFunction then
+				continue
+			end
 		end
 
+		-- Nothing worked for this argument? Tables don't match.
 		return false
 	end
 
