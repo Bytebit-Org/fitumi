@@ -17,8 +17,8 @@ return function()
 			expect(internals).to.be.ok()
 			expect(internals).to.be.a("table")
 
-			expect(internals["callBehaviors"]).to.be.ok()
-			expect(internals["callBehaviors"]).to.be.a("table")
+			expect(internals["callResults"]).to.be.ok()
+			expect(internals["callResults"]).to.be.a("table")
 
 			expect(internals["callHistory"]).to.be.ok()
 			expect(internals["callHistory"]).to.be.a("table")
@@ -55,7 +55,7 @@ return function()
 			local result = fake()
 
 			local returnValue = {}
-			result[internalsSymbol].callBehaviors = {
+			result[internalsSymbol].callResults = {
 				{
 					args = createVarArgsTable(true, 2, "three"),
 					returnValueGetter = function() return returnValue end,
@@ -73,7 +73,7 @@ return function()
 		it("should return tuple values correctly", function()
 			local result = fake()
 
-			result[internalsSymbol].callBehaviors = {
+			result[internalsSymbol].callResults = {
 				{
 					args = createVarArgsTable(),
 					returnValueGetter = function() return true, 2, "three" end,
@@ -89,7 +89,7 @@ return function()
 			expect(returnedVal3).to.equal("three")
 		end)
 
-		it("should respect number of matches per behavior correctly", function()
+		it("should respect number of matches per behavior and result correctly", function()
 			local result = fake()
 
 			local invokeCount = 0
@@ -101,6 +101,8 @@ return function()
 					invoke = function () invokeCount = invokeCount + 1 end,
 					numberOfRemainingUses = 2
 				},
+			}
+			result[internalsSymbol].callResults = {
 				{
 					args = createVarArgsTable(true, 2, "three"),
 					returnValueGetter = function() return returnValue end,
@@ -113,14 +115,13 @@ return function()
 				},
 			}
 
-			expect(result(true, 2, "three")).to.never.be.ok()
+			expect(result(true, 2, "three")).to.equal(returnValue)
 			expect(invokeCount).to.equal(1)
-			expect(result(true, 2, "three")).to.never.be.ok()
+			expect(result(true, 2, "three")).to.equal(returnValue)
 			expect(invokeCount).to.equal(2)
 
 			expect(result(true, 2, "three")).to.equal(returnValue)
-			expect(result(true, 2, "three")).to.equal(returnValue)
-			expect(result(true, 2, "three")).to.equal(returnValue)
+			expect(invokeCount).to.equal(2)
 
 			for _ = 1, math.random(10, 20) do
 				expect(function ()

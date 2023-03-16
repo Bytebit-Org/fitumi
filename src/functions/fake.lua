@@ -10,6 +10,7 @@ local function createFake()
 		[internalsSymbol] = {
 			callBehaviors = {},
 			callHistory = {},
+			callResults = {},
 			setValues = {},
 			writeHistory = {}
 		}
@@ -22,27 +23,40 @@ local function fakedTableCall(fakedTable, ...)
 	table.insert(fakedTable[internalsSymbol].callHistory, givenArgs)
 
 	local callBehaviors = fakedTable[internalsSymbol].callBehaviors
-	if not callBehaviors then
+	if callBehaviors then
+		for i = 1, #callBehaviors do
+			local callBehavior = callBehaviors[i]
+			if doesVarArgsTableMatchExpectations(givenArgs, callBehavior.args) then
+				callBehavior.numberOfRemainingUses = callBehavior.numberOfRemainingUses - 1
+				if callBehavior.numberOfRemainingUses == 0 then
+					table.remove(callBehaviors, i)
+				end
+
+				callBehavior.invoke(unpack(givenArgs))
+				break
+			end
+		end
+	end
+
+	local callResults = fakedTable[internalsSymbol].callResults
+	if not callResults then
 		return
 	end
 
-	for i = 1, #callBehaviors do
-		local callBehavior = callBehaviors[i]
-		if doesVarArgsTableMatchExpectations(givenArgs, callBehavior.args) then
-			callBehavior.numberOfRemainingUses = callBehavior.numberOfRemainingUses - 1
-			if callBehavior.numberOfRemainingUses == 0 then
-				table.remove(callBehaviors, i)
+	for i = 1, #callResults do
+		local callResult = callResults[i]
+		if doesVarArgsTableMatchExpectations(givenArgs, callResult.args) then
+			callResult.numberOfRemainingUses = callResult.numberOfRemainingUses - 1
+			if callResult.numberOfRemainingUses == 0 then
+				table.remove(callResults, i)
 			end
 
-			if callBehavior["invoke"] then
-				-- callTo(...):executes(...)
-				callBehavior.invoke(unpack(givenArgs))
-			elseif callBehavior["throw"] then
+			if callResult["throw"] then
 				-- callTo(...):throws(...)
-				callBehavior.throw()
-			elseif callBehavior["returnValueGetter"] then
+				callResult.throw()
+			elseif callResult["returnValueGetter"] then
 				-- callTo(...):returns(...)
-				return callBehavior.returnValueGetter()
+				return callResult.returnValueGetter()
 			end
 
 			break

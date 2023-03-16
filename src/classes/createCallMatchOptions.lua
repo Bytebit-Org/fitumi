@@ -1,11 +1,12 @@
 local cloneSymbol = require(script.Parent.Parent.internal.cloneSymbol)
 local createCallBehaviorOptions = require(script.Parent.createCallBehaviorOptions)
+local createCallResultOptions = require(script.Parent.createCallResultOptions)
 local doesVarArgsTableMatchExpectations = require(script.Parent.Parent.internal.doesVarArgsTableMatchExpectations)
 local internalsSymbol = require(script.Parent.Parent.internal.internalsSymbol)
 local isFakedTable = require(script.Parent.Parent.internal.isFakedTable)
 local valueGeneratorCallbackSymbol = require(script.Parent.Parent.internal.valueGeneratorCallbackSymbol)
 
-function createCallMatchOptions(fakedTable, expectedArgs, higherPrecedenceBehavior)
+function createCallMatchOptions(fakedTable, expectedArgs, higherPrecedenceBehavior, higherPrecedenceResult)
 	assert(isFakedTable(fakedTable), "Can only use createCallResult on a faked table")
 
 	function addCallBehaviorToFakedTable(callBehavior)
@@ -23,9 +24,24 @@ function createCallMatchOptions(fakedTable, expectedArgs, higherPrecedenceBehavi
 		table.insert(fakedTable[internalsSymbol].callBehaviors, insertIndex, callBehavior)
 	end
 
+	function addCallResultToFakedTable(callResult)
+		local insertIndex = 1
+
+		if higherPrecedenceResult then
+			for i = 1, #fakedTable[internalsSymbol].callResults do
+				if fakedTable[internalsSymbol].callResults[i] == higherPrecedenceResult then
+					insertIndex = i + 1
+					break
+				end
+			end
+		end
+
+		table.insert(fakedTable[internalsSymbol].callResults, insertIndex, callResult)
+	end
+
 	return {
-		[cloneSymbol] = function (sourceBehavior)
-			return createCallMatchOptions(fakedTable, expectedArgs, sourceBehavior)
+		[cloneSymbol] = function (newHigherPrecedenceBehavior, newHigherPrecedenceResult)
+			return createCallMatchOptions(fakedTable, expectedArgs, newHigherPrecedenceBehavior, newHigherPrecedenceResult)
 		end,
 
 		-- behavior options
@@ -37,25 +53,27 @@ function createCallMatchOptions(fakedTable, expectedArgs, higherPrecedenceBehavi
 
 			addCallBehaviorToFakedTable(callBehavior)
 
-			return createCallBehaviorOptions(self, callBehavior)
+			return createCallBehaviorOptions(self, callBehavior, higherPrecedenceResult)
 		end,
+
+		-- result options
 		throws = function (self, errorArgs)
-			local callBehavior = {
+			local callResult = {
 				args = expectedArgs,
 				throw = function ()
 					error(errorArgs)
 				end
 			}
 
-			addCallBehaviorToFakedTable(callBehavior)
+			addCallResultToFakedTable(callResult)
 
-			return createCallBehaviorOptions(self, callBehavior)
+			return createCallResultOptions(self, higherPrecedenceBehavior, callResult)
 		end,
 		returns = function(self, ...)
 			local n = select("#", ...)
 			local returnVals = { ... }
 
-			local callBehavior = {
+			local callResult = {
 				args = expectedArgs,
 				returnValueGetter = function()
 					if n == 1 and type(returnVals[1]) == "table" and type(returnVals[1][valueGeneratorCallbackSymbol]) == "function" then
@@ -66,9 +84,9 @@ function createCallMatchOptions(fakedTable, expectedArgs, higherPrecedenceBehavi
 				end
 			}
 
-			addCallBehaviorToFakedTable(callBehavior)
+			addCallResultToFakedTable(callResult)
 
-			return createCallBehaviorOptions(self, callBehavior)
+			return createCallResultOptions(self, higherPrecedenceBehavior, callResult)
 		end,
 
 		-- invokes checks

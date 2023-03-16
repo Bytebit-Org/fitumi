@@ -81,7 +81,7 @@ Sets calls with matching arguments to return the given values
 - ...\
 The values to return; if there are multiple, will be returned as a tuple
 #### Returns
-A `CallBehaviorOptions` object, as described in [CallBehaviorOptions](#CallBehaviorOptions)
+A `CallResultOptions` object, as described in [CallResultOptions](#CallResultOptions)
 
 `callMatchOptions:throws(...)`\
 Sets calls with matching arguments to error with the given values
@@ -89,7 +89,7 @@ Sets calls with matching arguments to error with the given values
 - ...\
 The values to error with
 #### Returns
-A `CallBehaviorOptions` object, as described in [CallBehaviorOptions](#CallBehaviorOptions)
+A `CallResultOptions` object, as described in [CallResultOptions](#CallResultOptions)
 
 ### CallBehaviorOptions
 `callBehaviorOptions:once()`\
@@ -109,6 +109,26 @@ A reference back to the same `CallBehaviorOptions` instance
 
 `callBehaviorOptions.andThen`\
 Points to clone of the source `CallMatchOptions` for this `CallBehaviorOptions` instance which will allow further call behaviors to be\
+configured to have lower precedence than the current behavior being configured
+
+### CallResultOptions
+`callResultOptions:once()`\
+Sets this call behavior to only be used once, then discarded to make way for other matching call behaviors
+#### Returns
+A reference back to the same `CallResultOptions` instance
+
+`callResultOptions:twice()`\
+Sets this call behavior to only be used twice, then discarded to make way for other matching call behaviors
+#### Returns
+A reference back to the same `CallResultOptions` instance
+
+`callResultOptions:numberOfTimes(numberOfTimes)`\
+Sets this call behavior to only be used exactly the number of times specified, then discarded to make way for other matching call behaviors
+#### Returns
+A reference back to the same `CallResultOptions` instance
+
+`callResultOptions.andThen`\
+Points to clone of the source `CallMatchOptions` for this `CallResultOptions` instance which will allow further call behaviors to be\
 configured to have lower precedence than the current behavior being configured
 
 ## Checking for writes to a faked table

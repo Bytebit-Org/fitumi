@@ -1,6 +1,6 @@
 local cloneSymbol = require(script.Parent.Parent.internal.cloneSymbol)
 
-return function (callResult, callBehavior)
+return function (callMatchOptions, callBehavior, higherPrecedenceResult)
 	callBehavior.numberOfRemainingUses = -1
 
 	return table.freeze({
@@ -19,6 +19,6 @@ return function (callResult, callBehavior)
 			return self
 		end,
 
-		andThen = callResult[cloneSymbol](callBehavior),
+		andThen = callMatchOptions[cloneSymbol](callBehavior, higherPrecedenceResult),
 	})
 end
