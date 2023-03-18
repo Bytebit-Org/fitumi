@@ -5,6 +5,9 @@
 `wildcard`\
 Used for comparing argument values and write values
 
+#### roblox-ts wildcard helper
+To avoid the need for something like `wildcard as unknown as MyType`, use `fitumi.ignore()` instead.
+
 ## Creating fakes
 ### Using `a`
 `a.fake()`\
