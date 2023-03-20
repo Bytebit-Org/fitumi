@@ -17,11 +17,11 @@ return function()
 			expect(internals).to.be.ok()
 			expect(internals).to.be.a("table")
 
+			expect(internals["callResults"]).to.be.ok()
+			expect(internals["callResults"]).to.be.a("table")
+
 			expect(internals["callHistory"]).to.be.ok()
 			expect(internals["callHistory"]).to.be.a("table")
-
-			expect(internals["functionReturns"]).to.be.ok()
-			expect(internals["functionReturns"]).to.be.a("table")
 
 			expect(internals["setValues"]).to.be.ok()
 			expect(internals["setValues"]).to.be.a("table")
@@ -55,10 +55,11 @@ return function()
 			local result = fake()
 
 			local returnValue = {}
-			result[internalsSymbol].functionReturns = {
+			result[internalsSymbol].callResults = {
 				{
 					args = createVarArgsTable(true, 2, "three"),
-					valueGetter = function() return returnValue end
+					returnValueGetter = function() return returnValue end,
+					numberOfRemainingUses = -1
 				}
 			}
 
@@ -72,10 +73,11 @@ return function()
 		it("should return tuple values correctly", function()
 			local result = fake()
 
-			result[internalsSymbol].functionReturns = {
+			result[internalsSymbol].callResults = {
 				{
 					args = createVarArgsTable(),
-					valueGetter = function() return true, 2, "three" end
+					returnValueGetter = function() return true, 2, "three" end,
+					numberOfRemainingUses = -1
 				}
 			}
 
@@ -85,6 +87,47 @@ return function()
 			expect(returnedVal1).to.equal(true)
 			expect(returnedVal2).to.equal(2)
 			expect(returnedVal3).to.equal("three")
+		end)
+
+		it("should respect number of matches per behavior and result correctly", function()
+			local result = fake()
+
+			local invokeCount = 0
+
+			local returnValue = {}
+			result[internalsSymbol].callBehaviors = {
+				{
+					args = createVarArgsTable(true, 2, "three"),
+					invoke = function () invokeCount = invokeCount + 1 end,
+					numberOfRemainingUses = 2
+				},
+			}
+			result[internalsSymbol].callResults = {
+				{
+					args = createVarArgsTable(true, 2, "three"),
+					returnValueGetter = function() return returnValue end,
+					numberOfRemainingUses = 3
+				},
+				{
+					args = createVarArgsTable(true, 2, "three"),
+					throw = function () error "rip" end,
+					numberOfRemainingUses = -1
+				},
+			}
+
+			expect(result(true, 2, "three")).to.equal(returnValue)
+			expect(invokeCount).to.equal(1)
+			expect(result(true, 2, "three")).to.equal(returnValue)
+			expect(invokeCount).to.equal(2)
+
+			expect(result(true, 2, "three")).to.equal(returnValue)
+			expect(invokeCount).to.equal(2)
+
+			for _ = 1, math.random(10, 20) do
+				expect(function ()
+					result(true, 2, "three")
+				end).to.throw()
+			end
 		end)
 
 		it("should set values correctly when given simple values", function()

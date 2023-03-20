@@ -4,7 +4,9 @@ return function ()
 
 	local callTo = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("callTo"))
 	local fake = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("fake"))
+	local internalsSymbol = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("internal"):WaitForChild("internalsSymbol"))
 	local valueGeneratorCallback = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("functions"):WaitForChild("valueGeneratorCallback"))
+	local wildcard = require(ReplicatedStorage:WaitForChild("fitumi"):WaitForChild("symbols"):WaitForChild("wildcard"))
 
 	describe("callTo", function ()
 		it("should return the expected set of methods", function ()
@@ -142,6 +144,98 @@ return function ()
 			local mismatchedArgsCallResult = fakedTable(false)
 			expect(mismatchedArgsCallResult).to.never.be.ok()
 			expect(valueGeneratorCallbackCallCount).to.equal(2)
+		end)
+
+		it("should put newest call matches at the front of the fakedTable's callBehaviors and callResults arrays", function ()
+			local fakedTable = fake()
+
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(0)
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(0)
+
+			callTo(fakedTable, true):executes(function () end)
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(1)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["invoke"]).to.be.ok()
+
+			callTo(fakedTable, true):returns("return value")
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(1)
+			expect(fakedTable[internalsSymbol]["callResults"][1]["returnValueGetter"]).to.be.ok()
+
+			callTo(fakedTable, true):throws("thrower")
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(2)
+			expect(fakedTable[internalsSymbol]["callResults"][1]["throw"]).to.be.ok()
+		end)
+
+		it("should put newest call matches at the end of the fakedTable's callBehaviors and callResults arrays if chained with andThen", function ()
+			local fakedTable = fake()
+
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(0)
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(0)
+
+			local callMatch = callTo(fakedTable, true)
+
+			local func1 = function () end
+			callMatch = callMatch:executes(func1).andThen
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(1)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["invoke"]).to.equal(func1)
+
+			local func2 = function () end
+			callMatch = callMatch:executes(func2).andThen
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(2)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][2]["invoke"]).to.equal(func2)
+
+			callMatch = callMatch:returns("return value").andThen
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(1)
+			expect(fakedTable[internalsSymbol]["callResults"][1]["returnValueGetter"]).to.be.ok()
+
+			callMatch:throws("thrower")
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(2)
+			expect(fakedTable[internalsSymbol]["callResults"][2]["throw"]).to.be.ok()
+		end)
+
+		it("should set numberOfRemainingUses properly", function ()
+			local fakedTable = fake()
+
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(0)
+
+			local callMatch = callTo(fakedTable, true)
+
+			callMatch = callMatch:returns("return value").andThen
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(1)
+			expect(fakedTable[internalsSymbol]["callResults"][1]["numberOfRemainingUses"]).to.equal(-1)
+
+			callMatch = callMatch:executes(function () end):once().andThen
+			expect(#fakedTable[internalsSymbol]["callBehaviors"]).to.equal(1)
+			expect(fakedTable[internalsSymbol]["callBehaviors"][1]["numberOfRemainingUses"]).to.equal(1)
+
+			callMatch = callMatch:returns("return value again"):twice().andThen
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(2)
+			expect(fakedTable[internalsSymbol]["callResults"][2]["numberOfRemainingUses"]).to.equal(2)
+
+			local randomCallsValue = math.random(10, 20)
+			callMatch:throws("thrower"):numberOfTimes(randomCallsValue)
+			expect(#fakedTable[internalsSymbol]["callResults"]).to.equal(3)
+			expect(fakedTable[internalsSymbol]["callResults"][3]["numberOfRemainingUses"]).to.equal(randomCallsValue)
+		end)
+
+		it("should be able to track invokes even before setting up a callTo", function ()
+			local fakedTable = fake()
+
+			local numberOfCalls = math.random(1, 100)
+
+			for _ = 1, numberOfCalls do
+				fakedTable["someFunction"](true, 2, "three")
+			end
+
+			expect(callTo(fakedTable["someFunction"], wildcard, wildcard, wildcard):countNumberOfMatchingCalls()).to.equal(numberOfCalls)
+			expect(callTo(fakedTable["someFunction"], wildcard, wildcard, "three"):countNumberOfMatchingCalls()).to.equal(numberOfCalls)
+			expect(callTo(fakedTable["someFunction"], wildcard, 2, "three"):countNumberOfMatchingCalls()).to.equal(numberOfCalls)
+			expect(callTo(fakedTable["someFunction"], true, 2, "three"):countNumberOfMatchingCalls()).to.equal(numberOfCalls)
+		end)
+
+		it("should start out with invokes count being 0", function ()
+			local fakedTable = fake()
+
+			expect(callTo(fakedTable):countNumberOfMatchingCalls()).to.equal(0)
 		end)
 	end)
 end

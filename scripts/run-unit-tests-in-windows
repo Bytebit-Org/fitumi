@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+powershell.exe /c "run-in-roblox --place $(wslpath -w $1) --script $(wslpath -w $2)"

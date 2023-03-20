@@ -1,12 +1,14 @@
 {
   "name": "@rbxts/fitumi",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "Fake It 'Till You Make It - A unit testing utility for faking everything from Roblox Instances to custom objects.",
   "main": "out/init.lua",
   "scripts": {
     "eslint": "npx eslint \"src/**/*.ts\" --max-warnings 0",
     "prepublishOnly": "rm -rf ./out; rbxtsc --type=package",
-    "test": "rojo build -o tests/build.rbxlx tests && run-in-roblox tests/build.rbxlx -s tests/spec.lua"
+    "test": "rojo build -o tests/build.rbxlx ./tests/default.project.json && run-in-roblox ./tests/build.rbxlx -s ./tests/spec.server.lua",
+    "wsl-open-unit-tests": "set -e; rojo build -o ./tests/build.rbxlx ./tests/default.project.json; ./scripts/open-in-windows ./tests/build.rbxlx",
+    "wsl-run-unit-tests": "set -e; rojo build -o ./tests/build.rbxlx ./tests/default.project.json; ./scripts/run-unit-tests-in-windows ./tests/build.rbxlx ./tests/spec.server.lua"
   },
   "keywords": [],
   "author": "Bytebit",
@@ -28,14 +30,15 @@
   ],
   "types": "out/index.d.ts",
   "devDependencies": {
-    "@rbxts/compiler-types": "^1.0.0-beta.14.1",
-    "@rbxts/types": "^1.0.439",
-    "@typescript-eslint/eslint-plugin": "^2.17.0",
-    "@typescript-eslint/parser": "^2.17.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.9.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "eslint-plugin-roblox-ts": "0.0.7",
-    "prettier": "^1.19.1"
+    "@rbxts/compiler-types": "^2.0.4-types.1",
+    "@rbxts/types": "^1.0.656",
+    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/parser": "^5.48.0",
+    "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-roblox-ts": "^0.0.35",
+    "prettier": "^2.8.2",
+    "typescript": "^4.9.5"
   }
 }

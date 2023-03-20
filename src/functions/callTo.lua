@@ -1,7 +1,5 @@
-local doesVarArgsTableMatchExpectations = require(script.Parent.Parent.internal.doesVarArgsTableMatchExpectations)
-local internalsSymbol = require(script.Parent.Parent.internal.internalsSymbol)
+local createCallMatchOptions = require(script.Parent.Parent.classes.createCallMatchOptions)
 local isFakedTable = require(script.Parent.Parent.internal.isFakedTable)
-local valueGeneratorCallbackSymbol = require(script.Parent.Parent.internal.valueGeneratorCallbackSymbol)
 local varArgsToTable = require(script.Parent.Parent.internal.varArgsToTable)
 
 return function (fakedTable, ...)
@@ -9,50 +7,5 @@ return function (fakedTable, ...)
 
 	local expectedArgs = varArgsToTable(...)
 
-	return {
-		executes = function (self, callback)
-			table.insert(fakedTable[internalsSymbol].executionCallbacks, {
-				args = expectedArgs,
-				invoke = callback
-			})
-
-			return self
-		end,
-		didHappen = function(self)
-			local callHistory = fakedTable[internalsSymbol].callHistory
-			for i = 1, #callHistory do
-				if doesVarArgsTableMatchExpectations(callHistory[i], expectedArgs) then
-					return true
-				end
-			end
-
-			return false
-		end,
-		didNotHappen = function(self)
-			return not self:didHappen()
-		end,
-		throws = function (self, errorArgs)
-			table.insert(fakedTable[internalsSymbol].callErrors, {
-				args = expectedArgs,
-				throw = function ()
-					error(errorArgs)
-				end
-			})
-		end,
-		returns = function(self, ...)
-			local n = select("#", ...)
-			local returnVals = { ... }
-
-			table.insert(fakedTable[internalsSymbol].functionReturns, {
-				args = expectedArgs,
-				valueGetter = function()
-					if n == 1 and type(returnVals[1]) == "table" and type(returnVals[1][valueGeneratorCallbackSymbol]) == "function" then
-						return returnVals[1]()
-					end
-
-					return unpack(returnVals)
-				end
-			})
-		end
-	}
+	return createCallMatchOptions(fakedTable, expectedArgs)
 end

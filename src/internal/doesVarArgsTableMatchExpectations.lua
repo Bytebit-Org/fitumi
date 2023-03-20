@@ -1,3 +1,4 @@
+local argMatchSymbol = require(script.Parent.Parent.internal.argMatchSymbol)
 local isNaN = require(script.Parent.Parent.internal.isNaN)
 local wildcard = require(script.Parent.Parent.symbols.wildcard)
 
@@ -11,13 +12,34 @@ return function (actual, expected)
 	end
 
 	for i = 1, actual.length do
-		local doesJthArgMatch = expected[i] == wildcard or
-			actual[i] == expected[i] or
-			(isNaN(actual[i]) and isNaN(expected[i]))
+		local ithActual = actual[i]
+		local ithExpected = expected[i]
 
-		if not doesJthArgMatch then
-			return false
+		local doesActualEqualExpected = ithActual == ithExpected
+		if doesActualEqualExpected then
+			continue
 		end
+
+		local isExpectedSetToWildcard = ithExpected == wildcard
+		if isExpectedSetToWildcard then
+			continue
+		end
+
+		local areBothValuesNaN = isNaN(ithExpected) and isNaN(ithActual)
+		if areBothValuesNaN then
+			continue
+		end
+
+		local isExpectedSetToMatchingFunction = type(ithExpected) == "table" and ithExpected[argMatchSymbol] ~= nil
+		if isExpectedSetToMatchingFunction then
+			local doesActualPassMatchingFunction = ithExpected.doesMatch(ithActual)
+			if doesActualPassMatchingFunction then
+				continue
+			end
+		end
+
+		-- Nothing worked for this argument? Tables don't match.
+		return false
 	end
 
 	return true

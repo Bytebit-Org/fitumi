@@ -1,5 +1,7 @@
 import { callTo } from "./functions/callTo";
 import { fake } from "./functions/fake";
+import { matchingArgValue } from "./functions/matchingArgValue";
+import { methodCallTo } from "./functions/methodCallTo";
 import { valueGeneratorCallback } from "./functions/valueGeneratorCallback";
 import { writeTo } from "./functions/writeTo";
 
@@ -11,6 +13,16 @@ export type a = {
 
 	/** Creates a faked table */
 	fake: fake;
+
+	/**
+	 * Returns an argument matcher that can be used with callTo to match arguments that cause a callback to return true
+	 */
+	matchingArgValue: matchingArgValue;
+
+	/**
+	 * Checks for a method call to a given faked table with matching arguments and returns a set of methods
+	 */
+	methodCallTo: methodCallTo;
 
 	/**
 	 * Creates a value generator callback that will just return the result of calling the provided callback.
